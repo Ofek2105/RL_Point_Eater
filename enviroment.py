@@ -93,9 +93,8 @@ class ArrowGameEnv:
         for dot in self.dots:
             pygame.draw.circle(self.screen, (255, 255, 255), dot, 5)
 
-        if self.plot:
-            pygame.display.flip()
-            time.sleep(0.001)
+        pygame.display.flip()
+            # time.sleep(0.001)
 
     def _get_state(self):
 
@@ -114,6 +113,6 @@ class ArrowGameEnv:
             dot_info[i * 2] = (dot_x - arrow_x) / self.width
             dot_info[i * 2 + 1] = (dot_y - arrow_y) / self.height
         state = np.concatenate((state, dot_info))
-        image_tensor = torch.from_numpy(pygame.surfarray.array3d(self.screen))
-        return state
+        image_ = np.transpose(pygame.surfarray.array3d(self.screen) / 255, (2, 0, 1))
+        return state, image_
 

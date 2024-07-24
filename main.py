@@ -62,6 +62,7 @@ def main():
     max_dots = 50
     arrow_speed = 1
     render = True
+    use_gpu = True
 
     # Calculate state size based on your environment's state representation
     state_size = 4 + max_dots * 2  # Example: arrow position (2), angle (2), relative dot positions (2 * num_dots)
@@ -77,7 +78,8 @@ def main():
         'min_epsilon': 0.01,
         'memory_size': 10000,
         'batch_size': 32,
-        'update_frequency': 4
+        'update_frequency': 4,
+        'GPU': use_gpu
     }
     agent = DQNAgent(**agent_params)
     env = ArrowGameEnv(env_width, env_height, num_dots, max_dots, arrow_speed, render)
@@ -85,8 +87,8 @@ def main():
     # Training
     num_episodes = 50000
     max_steps = 500
-    # train(env, agent, num_episodes, max_steps)
-    evaluate(env, agent, 10, 2000, 'saved_models/best.pth', True)
+    train(env, agent, num_episodes, max_steps)
+    # evaluate(env, agent, 10, 200, 'saved_models/best.pth', True)
 
 if __name__ == "__main__":
     main()
