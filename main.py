@@ -5,6 +5,17 @@ import os
 import torch
 
 
+def create_dirs():
+    """
+    Creates "runs" and "saved_models" directories if they do not exist in the project's root directory.
+    """
+    dirs = ["runs", "saved_models"]
+
+    for dir_ in dirs:
+        if not os.path.exists(dir_):
+            os.makedirs(dir_)
+
+
 def train(env, agent, num_episodes, max_steps, log_dir='runs', save_dir='saved_models'):
     writer = SummaryWriter(log_dir=log_dir)
     best_loss = float('inf')
@@ -33,7 +44,9 @@ def train(env, agent, num_episodes, max_steps, log_dir='runs', save_dir='saved_m
 
     writer.close()
 
+
 def evaluate(env, agent, num_episodes, max_steps, model_path, render=True):
+    env.update_screen_render_mode(is_shown=render)
     agent.q_network.load_state_dict(torch.load(model_path))
     agent.q_network.eval()
 
@@ -54,14 +67,19 @@ def evaluate(env, agent, num_episodes, max_steps, model_path, render=True):
                 print(f"Evaluation Episode: {episode}, Total reward: {total_reward}")
                 break
 
+
 def main():
+    create_dirs()
+
     # Environment parameters
     env_width = 600
     env_height = 400
     num_dots = 20
     max_dots = 50
     arrow_speed = 1
-    render = True
+
+    # bools
+    show_screen = True
     use_gpu = True
 
     # Calculate state size based on your environment's state representation
@@ -82,13 +100,14 @@ def main():
         'GPU': use_gpu
     }
     agent = DQNAgent(**agent_params)
-    env = ArrowGameEnv(env_width, env_height, num_dots, max_dots, arrow_speed, render)
+    env = ArrowGameEnv(env_width, env_height, num_dots, max_dots, arrow_speed, show_screen)
 
     # Training
     num_episodes = 50000
     max_steps = 500
     train(env, agent, num_episodes, max_steps)
-    # evaluate(env, agent, 10, 200, 'saved_models/best.pth', True)
+    evaluate(env, agent, 10, 200, 'saved_models/best.pth')
+
 
 if __name__ == "__main__":
     main()
