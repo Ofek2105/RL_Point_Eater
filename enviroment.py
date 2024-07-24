@@ -34,6 +34,9 @@ class ArrowGameEnv:
         for _ in range(num_dots):
             self.dots.append([random.randint(0, width), random.randint(0, height)])
 
+    def update_screen_render_mode(self, is_shown=True):
+        self.screen = pygame.display.set_mode((self.width, self.height), flags=is_shown)
+
     def reset(self):
         # Reset environment to initial state
         self.arrow_angle = 0
@@ -94,7 +97,7 @@ class ArrowGameEnv:
             pygame.draw.circle(self.screen, (255, 255, 255), dot, 5)
 
         pygame.display.flip()
-            # time.sleep(0.001)
+        # time.sleep(0.001)
 
     def _get_state(self):
 
@@ -115,4 +118,3 @@ class ArrowGameEnv:
         state = np.concatenate((state, dot_info))
         image_ = np.transpose(pygame.surfarray.array3d(self.screen) / 255, (2, 0, 1))
         return state, image_
-
