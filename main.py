@@ -102,7 +102,10 @@ def main():
     # Training
     num_episodes = 50000
     max_steps = 500
-    train(env, agent, num_episodes, max_steps)
+    # train(env, agent, num_episodes, max_steps)
+
+
+    # eval
     evaluate(env, agent, 10, 200, 'saved_models/best.pth')
 
 

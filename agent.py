@@ -10,7 +10,7 @@ import torch.nn.functional as f
 
 class DQNAgent:
     def __init__(self, state_size, action_size, learning_rate, gamma, epsilon, epsilon_decay, min_epsilon, memory_size,
-                 batch_size, update_frequency):
+                 batch_size, update_frequency, GPU):
         self.state_size = state_size
         self.action_size = action_size
         self.learning_rate = learning_rate
@@ -22,6 +22,7 @@ class DQNAgent:
         self.batch_size = batch_size
         self.update_frequency = update_frequency
         self.step_count = 0
+        self.device = torch.device("cuda" if GPU else "cpu")
 
         # Initialize the DQN model
         self.q_network = DQN(state_size, action_size).to(torch.float32)
@@ -77,10 +78,10 @@ class DQNAgent:
 
         states, actions, rewards, next_states, dones = zip(*minibatch)
 
-        states = torch.stack([torch.from_numpy(state) for state in states])
-        actions = torch.stack([torch.tensor(action, dtype=torch.int64) for action in actions])
-        rewards = torch.stack([torch.tensor(reward, dtype=torch.float32) for reward in rewards])
-        next_states = torch.stack([torch.tensor(next_state, dtype=torch.float32) for next_state in next_states])
-        dones = torch.stack([torch.tensor(done, dtype=torch.float32) for done in dones])
+        states = torch.stack([torch.from_numpy(state) for state in states]).to(self.device)
+        actions = torch.stack([torch.tensor(action, dtype=torch.int64) for action in actions]).to(self.device)
+        rewards = torch.stack([torch.tensor(reward, dtype=torch.float32) for reward in rewards]).to(self.device)
+        next_states = torch.stack([torch.tensor(next_state, dtype=torch.float32) for next_state in next_states]).to(self.device)
+        dones = torch.stack([torch.tensor(done, dtype=torch.float32) for done in dones]).to(self.device)
 
         return actions, dones, next_states, rewards, states
