@@ -86,8 +86,8 @@ def main():
     # Environment parameters
     env_width = 600
     env_height = 400
-    num_dots = 20
-    max_dots = 50
+    num_dots = 15
+    max_dots = 20
     arrow_speed = 1
 
     # bools
@@ -95,20 +95,20 @@ def main():
     use_gpu = True
 
     # Calculate state size based on your environment's state representation
-    state_size = 4 + max_dots * 2  # Example: arrow position (2), angle (2), relative dot positions (2 * num_dots)
+    state_size = 4 + max_dots * 3  # Example: arrow position (2), angle (2), relative dot positions (3 * num_dots)
 
     # Agent parameters
     agent_params = {
         'state_size': state_size,
         'action_size': 3,  # turn left, turn right, do nothing
-        'learning_rate': 0.001,
-        'gamma': 0.95,
+        'learning_rate': 0.0001,
+        'gamma': 0.98,
         'epsilon': 1.0,
         'epsilon_decay': 0.995,
         'min_epsilon': 0.01,
-        'memory_size': 10000,
+        'memory_size': 5000,
         'batch_size': 32,
-        'update_frequency': 4,
+        'update_frequency': 50,
         'GPU': use_gpu
     }
     agent = DQNAgent(**agent_params)

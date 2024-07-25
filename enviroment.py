@@ -32,7 +32,7 @@ class ArrowGameEnv:
         # Dot properties
         self.dots = []
         for _ in range(num_dots):
-            self.dots.append([random.randint(0, width), random.randint(0, height)])
+            self.dots.append((random.randint(0, width), random.randint(0, height)))
 
     def update_screen_render_mode(self, is_shown=True):
         self.screen = pygame.display.set_mode((self.width, self.height), flags=is_shown)
@@ -43,7 +43,7 @@ class ArrowGameEnv:
         self.arrow_pos = [self.width // 2, self.height // 2]
         self.dots = []
         for _ in range(self.num_dots):
-            self.dots.append([random.randint(0, self.width), random.randint(0, self.height)])
+            self.dots.append((random.randint(0, self.width), random.randint(0, self.height)))
         self.render()
 
         return self._get_state()
@@ -110,12 +110,18 @@ class ArrowGameEnv:
         ], dtype=np.float32)
 
         # Pad with zeros for missing dots
-        dot_info = np.zeros(self.max_dots * 2, dtype=np.float32)
-        for i, dot in enumerate(self.dots):
+        dot_info = np.zeros(self.max_dots * 3, dtype=np.float32)
+        sorted_dots = sorted(self.dots, key=lambda dot: self.dot_arrow_dist(dot))
+        for i, dot in enumerate(sorted_dots):
             dot_x, dot_y = dot
-            dot_info[i * 2] = (dot_x - arrow_x) / self.width
-            dot_info[i * 2 + 1] = (dot_y - arrow_y) / self.height
+            dot_info[i * 3] = (dot_x - arrow_x) / self.width
+            dot_info[i * 3 + 1] = (dot_y - arrow_y) / self.height
+            dot_info[i * 3 + 2] = 1
         state = np.concatenate((state, dot_info))
-        image_tensor = torch.from_numpy(pygame.surfarray.array3d(self.screen))
+        # image_tensor = torch.from_numpy(pygame.surfarray.array3d(self.screen))
         return state
 
+    def dot_arrow_dist(self, dot):
+        x1, y1 = self.arrow_pos
+        x2, y2 = dot
+        return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
