@@ -1,6 +1,5 @@
 from enviroment import ArrowGameEnv
 from agent import DQNAgent
-from tensorboardX import SummaryWriter
 import os
 import torch
 
@@ -17,7 +16,7 @@ def create_dirs():
 
 
 def train(env, agent, num_episodes, max_steps, log_dir='runs/', save_dir='saved_models', continue_model_path=None):
-    writer = SummaryWriter(log_dir=log_dir)
+    # writer = SummaryWriter(log_dir=log_dir)
     best_loss = float('inf')
     if continue_model_path is not None:
         agent.initialize_weights_from_model_path(continue_model_path)
@@ -35,7 +34,7 @@ def train(env, agent, num_episodes, max_steps, log_dir='runs/', save_dir='saved_
             state = next_state
             total_reward += reward
 
-        writer.add_scalar('reward', total_reward, episode)
+        # writer.add_scalar('reward', total_reward, episode)
 
         saved_str = ""
         if loss < best_loss:
@@ -48,7 +47,7 @@ def train(env, agent, num_episodes, max_steps, log_dir='runs/', save_dir='saved_
         # Update epsilon
         agent.epsilon = max(agent.min_epsilon, agent.epsilon * agent.epsilon_decay)
 
-    writer.close()
+    # writer.close()
 
 
 def evaluate(env, agent, num_episodes, max_steps, model_path, render=True):
