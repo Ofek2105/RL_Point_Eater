@@ -1,6 +1,6 @@
 This project Attempts to Train a DQN model to get as many points as possible in a screen.
  
-The state is constracted like so:
+*The state is constracted like so:*
 
 1. player x
 2. player y
@@ -20,3 +20,12 @@ the availible action are (turn left, turn right, do nothing)
 this is a snapshop of the screen:
 
 ![image](https://github.com/user-attachments/assets/6c01c2d6-328c-47c7-b87c-2402b003ca36)
+
+The red line is the player.
+the white dots are where the player need to reach.
+
+*the reward is calculated like so:*
+each point gives 1 point.
+each step out of bound gives -0.1 points
+
+
