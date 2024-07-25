@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/eabbc57d-f2d2-42ad-baa3-1486bbb6102d)This project Attempts to Train a DQN model to get as many points as possible in a screen.
+This project Attempts to Train a DQN model to get as many points as possible in a screen.
  
 The state is constracted like so:
 
