@@ -12,7 +12,7 @@ for each dot we have:
 7. dot_y - player_y
 8. bollean: 0 if taken, else 1
 
-then if max_dots is 20, the state site will be:
+Then if max_dots is 20, Then the state size will be:
 state_size = 4 + 3*20 = 64
 
 the availible action are (turn left, turn right, do nothing)
