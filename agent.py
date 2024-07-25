@@ -25,8 +25,8 @@ class DQNAgent:
         self.device = torch.device("cuda" if GPU else "cpu")
 
         # Initialize the DQN model
-        self.q_network = DQN(state_size, action_size).to(torch.float32)
-        self.target_network = DQN(state_size, action_size).to(torch.float32)
+        self.q_network = DQN(state_size, action_size).to(torch.float32).to(self.device)
+        self.target_network = DQN(state_size, action_size).to(torch.float32).to(self.device)
         self.target_network.load_state_dict(self.q_network.state_dict())
         self.target_network.eval()
 
@@ -36,11 +36,17 @@ class DQNAgent:
         # Replay memory
         self.memory = deque(maxlen=memory_size)
 
-    def choose_action(self, state):
-        if np.random.rand() <= self.epsilon:
+    def initialize_weights_from_model_path(self, path): # TODO: raise error when we try to reach a file that isn't there
+        self.q_network.load_state_dict(torch.load(path))
+        self.target_network.load_state_dict(self.q_network.state_dict())
+        self.target_network.eval()
+
+    def choose_action(self, state, exploration=True):
+
+        if exploration and np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
         else:
-            state = torch.tensor(state, dtype=torch.float32)
+            state = torch.from_numpy(state).to(self.device)
             q_values = self.q_network(state)
             return torch.argmax(q_values).item()
 

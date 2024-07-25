@@ -16,9 +16,12 @@ def create_dirs():
             os.makedirs(dir_)
 
 
-def train(env, agent, num_episodes, max_steps, log_dir='runs', save_dir='saved_models'):
+def train(env, agent, num_episodes, max_steps, log_dir='runs/', save_dir='saved_models', continue_model_path=None):
     writer = SummaryWriter(log_dir=log_dir)
     best_loss = float('inf')
+    if continue_model_path is not None:
+        agent.initialize_weights_from_model_path(continue_model_path)
+        print("continue training with given model")
 
     for episode in range(num_episodes):
         state = env.reset()
@@ -32,12 +35,15 @@ def train(env, agent, num_episodes, max_steps, log_dir='runs', save_dir='saved_m
             state = next_state
             total_reward += reward
 
-        print(f"Episode: {episode}, Total reward: {total_reward}")
         writer.add_scalar('reward', total_reward, episode)
 
+        saved_str = ""
         if loss < best_loss:
-            best_loss = loss
             torch.save(agent.q_network.state_dict(), os.path.join(save_dir, 'best.pth'))
+            saved_str = "Saved"
+        best_loss = loss
+
+        print(f"Episode: {episode}, Total reward: {total_reward} randomness {agent.epsilon:.3f} {saved_str}")
 
         # Update epsilon
         agent.epsilon = max(agent.min_epsilon, agent.epsilon * agent.epsilon_decay)
@@ -46,6 +52,7 @@ def train(env, agent, num_episodes, max_steps, log_dir='runs', save_dir='saved_m
 
 
 def evaluate(env, agent, num_episodes, max_steps, model_path, render=True):
+    print("\nStarting visual Evaluating")
     env.update_screen_render_mode(is_shown=render)
     agent.q_network.load_state_dict(torch.load(model_path))
     agent.q_network.eval()
@@ -55,7 +62,7 @@ def evaluate(env, agent, num_episodes, max_steps, model_path, render=True):
         total_reward = 0
 
         for step in range(max_steps):
-            action = agent.choose_action(state)
+            action = agent.choose_action(state, exploration=False)
             next_state, reward, done = env.step(action)
             state = next_state
             total_reward += reward
@@ -76,7 +83,7 @@ def main():
     arrow_speed = 1
 
     # bools
-    show_screen = True
+    show_screen = False
     use_gpu = True
 
     # Calculate state size based on your environment's state representation
@@ -100,9 +107,10 @@ def main():
     env = ArrowGameEnv(env_width, env_height, num_dots, max_dots, arrow_speed, show_screen)
 
     # Training
-    num_episodes = 50000
-    max_steps = 500
-    # train(env, agent, num_episodes, max_steps)
+    num_episodes = 5000
+    max_steps = 300
+
+    train(env, agent, num_episodes, max_steps, continue_model_path='saved_models/500episodes.pth')
 
 
     # eval
