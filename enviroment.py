@@ -7,12 +7,14 @@ import numpy as np
 
 
 class ArrowGameEnv:
-    def __init__(self, width=600, height=400, num_dots=20, max_dots=50, arrow_speed=5, plot=False):
+    def __init__(self, width=600, height=400, num_dots=20, max_dots=50,
+                 arrow_speed=5, arrow_angular_speed=5, plot=False):
         pygame.init()
         self.width = width
         self.height = height
         self.num_dots = num_dots
         self.arrow_speed = arrow_speed
+        self.arrow_angular_speed = arrow_angular_speed
 
         self.plot = plot
 
@@ -51,9 +53,9 @@ class ArrowGameEnv:
     def step(self, action):
         # Action is either 0 (turn left) or 1 (turn right) or 2 (do nothing)
         if action == 0:
-            self.arrow_angle -= 5
+            self.arrow_angle -= self.arrow_angular_speed
         elif action == 1:
-            self.arrow_angle += 5
+            self.arrow_angle += self.arrow_angular_speed
 
         # Calculate new arrow position based on angle and speed
         dx = self.arrow_speed * math.cos(math.radians(self.arrow_angle))
@@ -67,7 +69,7 @@ class ArrowGameEnv:
 
         self.render()
 
-        # Check for dot collisions
+        # reward calculation
         reward = 0
         for i, dot in enumerate(self.dots):
             if math.dist(self.arrow_pos, dot) < self.min_collision_dist:
