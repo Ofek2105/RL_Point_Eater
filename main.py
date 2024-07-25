@@ -3,6 +3,14 @@ from agent import DQNAgent
 import os
 import torch
 
+'''
+    This Project was run on cuda version:
+    Cuda compilation tools, release 12.0, V12.0.76
+    Build cuda_12.0.r12.0/compiler.31968024_0
+
+    and python version 3.8
+'''
+
 
 def create_dirs():
     """
@@ -73,6 +81,7 @@ def evaluate(env, agent, num_episodes, max_steps, model_path, render=True):
                 print(f"Evaluation Episode: {episode}, Total reward: {total_reward}")
                 break
 
+
 def main():
     # Environment parameters
     env_width = 600
@@ -109,8 +118,7 @@ def main():
     num_episodes = 5000
     max_steps = 300
 
-    train(env, agent, num_episodes, max_steps, continue_model_path='saved_models/500episodes.pth')
-
+    train(env, agent, num_episodes, max_steps, continue_model_path=None)
 
     # eval
     evaluate(env, agent, 10, 200, 'saved_models/best.pth')
